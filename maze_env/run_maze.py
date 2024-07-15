@@ -36,3 +36,5 @@ if __name__ == '__main__':
     # update在每一次调用的过程中,agent和env进行交互,也就是agent进行行为选择
     env.after(100,update)
     env.mainloop()
+
+
