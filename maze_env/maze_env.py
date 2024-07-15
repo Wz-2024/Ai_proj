@@ -74,7 +74,8 @@ class Maze(tk.Tk, object):
         self.rect = self.canvas.create_rectangle(
             origin[0] - 15, origin[1] - 15,
             origin[0] + 15, origin[1] + 15,
-            fill='red')
+            fill='red'
+        )
         # return observation
         return self.canvas.coords(self.rect)
 

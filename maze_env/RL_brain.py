@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 class QLearningTable:
-    def __init__(self,actions,learning_rate,reward_decay=0.9,e_greedy=0.9):
+    def __init__(self,actions,learning_rate=0.01,reward_decay=0.9,e_greedy=0.9):
         #创建二维表格,行是各种状态,列是各种行为
         self.actions=actions#表示一个列表,其中表示各种可用的行为
         #这里只是定义了若干列,,行数随着观测增加
@@ -33,7 +33,7 @@ class QLearningTable:
         #更新Q表中的每一个值   bellman方程   	Q(s,a)←Q(s,a)+lr[r+γmax(a')Q(s_,a_)−Q(s,a)]
         # s a r s_ 当前state,当前action,奖励,未来state
         #当前时刻的状态s已经在当前时刻选择行为的时候,也就是调用choose_action时,检查过了
-        self.check_state_exists(s)
+        self.check_state_exists(s_)
         #预测就是查询Q_table中的数值
         q_predict=self.q_table.loc[s,a]
         #需要判断大钱回合是否进行到了最后
@@ -50,11 +50,11 @@ class QLearningTable:
         #如果当前状态在qtable中不存在,就向qtable中添加一行
         if state not in self.q_table.index:
             #将这个状态添加到qtable中
-            self.q_table=self.q_table.append(
+            self.q_table=self.q_table._append(
                 #dataframe是二维结构 其中每一个元素是一个一维的结构 Series
                 pd.Series(
                     [0]*len(self.actions),
-                    index=self.q_table.colums,
+                    index=self.q_table.columns,
                     name=state
                 )
             )
