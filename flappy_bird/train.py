@@ -1,11 +1,11 @@
 import numpy as np
 from random import random, randint, sample
 import flappy_bird.game.wrapped_flappy_bird as game
-from agent import DQNNetwork
 import argparse
 import torch
 import torch.nn as nn
-import cv2
+from flappy_bird.src.deep_q_network import DeepQNetowrk
+from flappy_bird.src.utils import resize_and_bgr2gray,image_to_tensor
 
 
 # 读入超参数的函数方法
@@ -15,7 +15,7 @@ def get_args():
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--optimizer', type=str, choices=['sgd', 'adam'], default='adam')
     parser.add_argument('--lr', type=float, default=1e-6)
-    parser.add_argument('--maga', type=float, default=0.99)
+    parser.add_argument('--gama', type=float, default=0.99)
     parser.add_argument('--initial_epsilon', type=float, default=0.1)
     parser.add_argument('--final_epsilon', type=float, default=1e-4)
     parser.add_argument('--num_iters', type=int, default=2000000)
@@ -25,25 +25,7 @@ def get_args():
     return args
 
 
-def image_to_tensor(image):
-    # 之前是(84,84,1) 经过下边这行代码就变为(1,84,84) ,,因为pytorch要求通道在宽和高的前边
-    image_tensor = image.transpose(2, 0, 1)
-    image_tensor = image_tensor.astype(np.float32)
-    image_tensor = torch.from_numpy(image_tensor)
 
-    return image_tensor
-
-
-def resize_and_bgr2gray(image):
-    # 把flappy_bird每一帧图像中的地面去除掉
-    image = image[:288, :404]
-    # 改变大小,变成黑白
-    image_data = cv2.cvtColor(cv2.resize(image, (84, 84)), cv2.COLOR_BGR2GRAY)
-    # 二值化
-    image_data[image_data > 0] = 255
-    # reshape
-    image_data = np.reshape(image_data, (84, 84, 1))
-    return image_data
 
 
 
@@ -53,7 +35,7 @@ def train(opt):
     else:
         torch.manual_seed(123)
     # 获取模型
-    model = DQNNetwork()
+    model = DeepQNetowrk()
     # 初始化优化器
     optimizer = torch.optim.Adam(model.parameters(), lr=opt.lr)
     # 设置损失函数
@@ -73,7 +55,7 @@ def train(opt):
     image_data = image_to_tensor(image_data)
 
     if torch.cuda.is_available():
-        image_tensor = image_data.cuda()
+        image_data = image_data.cuda()
         model.cuda()
 
     # State状态其实是连续的4帧画面,,在一开始的时候,将状态的4帧全部设置成初始的第一帧画面
@@ -131,7 +113,7 @@ def train(opt):
         state_batch, action_batch, reward_batch, next_state_batch, terminal_batch = zip(*batch)
 
         state_batch = torch.cat(tuple(state for state in state_batch))
-        action_batch = torch.cat(tuple(state for state in state_batch))
+        action_batch = torch.cat(tuple(action for action in action_batch))
         reward_batch = torch.from_numpy(np.array(reward_batch, dtype=np.float32)[:, None])
         next_state_batch = torch.cat(tuple(next_state for next_state in next_state_batch))
 
@@ -148,20 +130,21 @@ def train(opt):
 
         # 准备y target 对于一个批次的
         # target=R+max(Q(S',a))
-        y_batch = torch.cat(tuple(reward if terminal else reward + opt.gama * torch.max(prediction)
-                                  for reward, terminal, prediction
-                                  in zip(reward_batch, terminal_batch, next_prediction_batch)
-                                  )
-                            )
+        y_batch = torch.cat(tuple(
+            reward if terminal else reward + opt.gama * torch.max(prediction) for reward, terminal, prediction in
+            zip(reward_batch, terminal_batch, next_prediction_batch
+                )))
         # 模型的预测值 prediction
         # 这里的action_batch是one-hot编码,,,相乘相加就是action对应的某个模型预测的Q值
 
-        q_value = torch.sum(current_prediction_batch * action_batch.view(-1,2),dim=1)
-
+        q_value = torch.sum(current_prediction_batch * action_batch.view(-1, 2), dim=1)
         optimizer.zero_grad()
         loss = loss_f(q_value, y_batch)
         loss.backward()
         optimizer.step()
+
+        #清缓存
+        torch.cuda.empty_cache()
 
         state = next_state
         iter += 1
