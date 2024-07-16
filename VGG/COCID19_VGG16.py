@@ -55,7 +55,7 @@ data_transform={
 }
 
 #读取数据
-base_dir=r'../VGG/cats_and_dogs/kaggle_Dog&Cat/kaggle_Dog&Cat'
+base_dir=r'E:/尚学堂ai/cats_and_dogs/kaggle_Dog&Cat/kaggle_Dog&Ca'
 train_dir=os.path.join(base_dir,'train')
 validation_dir=os.path.join(base_dir,'validation')
 
