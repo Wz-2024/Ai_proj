@@ -18,7 +18,7 @@ def get_args():
     parser.add_argument('--gama', type=float, default=0.99)
     parser.add_argument('--initial_epsilon', type=float, default=0.1)
     parser.add_argument('--final_epsilon', type=float, default=1e-4)
-    parser.add_argument('--num_iters', type=int, default=2000000)
+    parser.add_argument('--num_iters', type=int, default=2000000 )
     parser.add_argument('--saved_path', type=str, default='trained_models')
     parser.add_argument('--replay_memory_size', type=int, default=50000, help='缓存的大小')
     args = parser.parse_args()
@@ -152,7 +152,7 @@ def train(opt):
             iter + 1, opt.num_iters, action, loss, epsilon, reward, torch.max(prediction)))
 
         # 间隔一段时间,保存模型
-        if (iter + 1) % 1000000 == 0:
+        if (iter + 1) % 1000000  == 0:
             torch.save(model, "{}/flappy_bird_{}".format(opt.saved_path, iter + 1))
     torch.save(model, "{}/flappy_bird".format(opt.saved_path))
 

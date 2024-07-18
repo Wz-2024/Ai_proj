@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="dyy@222.19.236.156:6012 password (11)" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="dyy@222.19.236.156:6012 password">
         <serverdata>
           <mappings>
             <mapping deploy="/tmp/pycharm_project_335" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dyy@222.19.236.156:6012 password (10)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_851" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dyy@222.19.236.156:6012 password (11)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_54" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dyy@222.19.236.156:6012 password (12)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_654" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
@@ -48,6 +69,20 @@
         <serverdata>
           <mappings>
             <mapping deploy="/tmp/pycharm_project_705" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dyy@222.19.236.156:6012 password (8)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_81" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dyy@222.19.236.156:6012 password (9)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_572" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
