@@ -50,7 +50,6 @@ def test(opt):
         # 让模型进行正向传播预测Q值
         prediction = model(state)[0]
         action_index = torch.argmax(prediction).item()
-
         # 构造需要的action
         action = torch.zeros(2, dtype=torch.float32)
         action[action_index] = 1
