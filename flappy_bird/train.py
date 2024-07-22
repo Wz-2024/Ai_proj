@@ -47,7 +47,7 @@ def train(opt):
     # [1,0]表示do nothing,[0,1]表示向上飞一下
     action[0] = 1
     # 让游戏开始运行
-    image_data, reward, terminal = game_state.frame_step(action, True)
+    image_data, reward, terminal = game_state.frame_step(action)
     # 对图像进行预处理
     # 改变大小,让彩色的变成黑白的
     image_data = resize_and_bgr2gray(image_data)
@@ -93,7 +93,7 @@ def train(opt):
         action[action_index] = 1
 
         # 与环境进行交互,,,得到下一个状态
-        image_data, reward, terminal = game_state.frame_step(action, True)
+        image_data, reward, terminal = game_state.frame_step(action)
         image_data = resize_and_bgr2gray(image_data)
         image_data = image_to_tensor(image_data)
         if torch.cuda.is_available():

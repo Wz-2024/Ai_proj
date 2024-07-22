@@ -29,7 +29,7 @@ def play_game():
                 pass
 
         #最重要的就是调用这个方法,,需要传入输入的Actions
-        _,_,terminal=game_state.frame_step(a_t,True)
+        _,_,terminal=game_state.frame_step(a_t)
 
 
 

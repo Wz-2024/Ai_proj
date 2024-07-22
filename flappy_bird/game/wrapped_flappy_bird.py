@@ -1,15 +1,6 @@
-import numpy as np
-import sys
 import random
 import pygame
-
-try:
-    from . import flappy_bird_utils
-except Exception:
-    import flappy_bird_utils
-
-import pygame.surfarray as surfarray
-from pygame.locals import *
+from flappy_bird.game import flappy_bird_utils
 from itertools import cycle
 
 FPS = 30
@@ -21,7 +12,7 @@ FPSCLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 pygame.display.set_caption('Flappy Bird')
 
-IMAGES, HITMASKS = flappy_bird_utils.load()
+IMAGES, SOUNDS, HITMASKS = flappy_bird_utils.load()
 PIPEGAPSIZE = 100  # gap between upper and lower part of pipe
 BASEY = SCREENHEIGHT * 0.79
 
@@ -62,7 +53,7 @@ class GameState:
         self.playerFlapAcc = -9  # players speed on flapping
         self.playerFlapped = False  # True when player flaps
 
-    def frame_step(self, input_actions, showFrame):
+    def frame_step(self, input_actions):
         pygame.event.pump()
 
         reward = 0.1
@@ -77,6 +68,7 @@ class GameState:
             if self.playery > -2 * PLAYER_HEIGHT:
                 self.playerVelY = self.playerFlapAcc
                 self.playerFlapped = True
+                SOUNDS['wing'].play()
 
         # check for score
         playerMidPos = self.playerx + PLAYER_WIDTH / 2
@@ -84,6 +76,7 @@ class GameState:
             pipeMidPos = pipe['x'] + PIPE_WIDTH / 2
             if pipeMidPos <= playerMidPos < pipeMidPos + 4:
                 self.score += 1
+                SOUNDS['point'].play()
                 reward = 1
 
         # playerIndex basex change
@@ -122,6 +115,8 @@ class GameState:
                               'index': self.playerIndex},
                              self.upperPipes, self.lowerPipes)
         if isCrash:
+            SOUNDS['hit'].play()
+            SOUNDS['die'].play()
             terminal = True
             self.__init__()
             reward = -1
@@ -134,19 +129,15 @@ class GameState:
             SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
 
         SCREEN.blit(IMAGES['base'], (self.basex, BASEY))
-
-        # Show score
+        # print score so player overlaps the score
         showScore(self.score)
-
         SCREEN.blit(IMAGES['player'][self.playerIndex],
                     (self.playerx, self.playery))
 
         image_data = pygame.surfarray.array3d(pygame.display.get_surface())
-
-        if showFrame:  # 是否展示游戏画面
-            pygame.display.update()
-            FPSCLOCK.tick(FPS)
-
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+        # print self.upperPipes[0]['y'] + PIPE_HEIGHT - int(BASEY * 0.2)
         return image_data, reward, terminal
 
 
@@ -230,11 +221,3 @@ def pixelCollision(rect1, rect2, hitmask1, hitmask2):
             if hitmask1[x1 + x][y1 + y] and hitmask2[x2 + x][y2 + y]:
                 return True
     return False
-
-
-if __name__ == "__main__":
-    # Example of running the game with random actions
-    game_state = GameState()
-    while True:
-        action = [1, 0] if random.random() > 0.5 else [0, 1]
-        game_state.frame_step(action, showFrame=True)

@@ -1,14 +1,16 @@
 import argparse
 import flappy_bird.game.wrapped_flappy_bird as game
 import torch.cuda
-from flappy_bird.src.utils import resize_and_bgr2gray,image_to_tensor
+from flappy_bird.src.utils import resize_and_bgr2gray, image_to_tensor
+
 
 def get_args():
-    parser=argparse.ArgumentParser('''使用DQN玩鸟''')
-    parser.add_argument('--image_size',type=int,default=84)
-    parser.add_argument('--saved_path',type=str,default='trained_models')
-    args=parser.parse_args()
+    parser = argparse.ArgumentParser("""使用DQN玩flappy bird""")
+    parser.add_argument("--image_size", type=int, default=84)
+    parser.add_argument("--saved_path", type=str, default="trained_models")
+    args = parser.parse_args()
     return args
+
 
 def test(opt):
     if torch.cuda.is_available():
@@ -16,22 +18,23 @@ def test(opt):
     else:
         torch.manual_seed(123)
 
-    #读取模型
+    # 读取模型
     if torch.cuda.is_available():
-        model=torch.load('{}/flappy_bird'.format(opt.saved_path))
+        model = torch.load("{}/flappy_bird".format(opt.saved_path))
     else:
-        model = torch.load('{}/flappy_bird'.format(opt.saved_path),map_location=lambda storage,loc:storage)
-    #使用模型正向传播
+        model = torch.load("{}/flappy_bird".format(opt.saved_path), map_location=lambda storage, loc:storage)
+
+    # 使用model进行正向传播，推理预测
     model.eval()
 
-    #初始化游戏环境
-    game_state=game.GameState()
-    #定义开始的动作
-    action=torch.zeros(2,dtype=torch.float32)
-    action[0]=1
-    #让游戏开始运行
-    image_data,reward,terminal=game_state.frame_step(action,True)
-    #对图片预处理
+    # 初始化游戏的环境
+    game_state = game.GameState()
+    # 定义一开始的动作，其实就是do nothing
+    action = torch.zeros(2, dtype=torch.float32)
+    action[0] = 1
+    # 让游戏开始去运行
+    image_data, reward, terminal = game_state.frame_step(action)
+
     # 对图片进行预处理
     image_data = resize_and_bgr2gray(image_data)
     image_data = image_to_tensor(image_data)
@@ -64,3 +67,7 @@ def test(opt):
 
         state = next_state
 
+
+if __name__ == '__main__':
+    opt = get_args()
+    test(opt)
